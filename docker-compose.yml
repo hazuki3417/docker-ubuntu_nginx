@@ -1,0 +1,21 @@
+version: "3.0"
+
+services:
+  nginx:
+    build: #buildしたときのimage名はimageに指定した名前になる
+      context: ./
+      dockerfile: Dockerfile
+    hostname: nginx
+    image: hazuki3417/nginx:latest
+    container_name: nginx
+    environment:
+      TZ: Asia/Tokyo
+    ports:
+      - "80:80"
+    networks: 
+      - common_link
+    tty: true
+
+networks:
+  common_link:
+    external: true

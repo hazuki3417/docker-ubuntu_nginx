@@ -31,6 +31,7 @@ RUN : "必要なコマンド類をインストール" && \
 	# geoip-bin
 	&& echo "complate!"
 
+ARG document_root=/var/www
 ARG workspace=/workspace
 RUN : '作業用ディレクトリ作成' && \
 	mkdir -m 777 ${workspace}
@@ -187,6 +188,9 @@ RUN : "Nginxをビルド・インストール" && \
 	make && make install && \
 	echo "Nginx install complate!"
 
+RUN : "不要なファイルを削除" && \
+	rm -rfv ${workspace}
+
 RUN : "Nginxの設定" && \
 	echo "nginx setting start..." && \
 	mkdir ${nginx_install_path}/modules-available && \
@@ -200,21 +204,31 @@ COPY config/nginx/sites/default_virtualhost.conf /etc/nginx/sites-available/
 
 WORKDIR /etc/nginx/sites-enabled
 RUN : "サイトの設定ファイルを読み込む" && \
-	ln -s ../sites-available/default_http.conf ./defautl_http.conf
-
-RUN : "不要なファイルを削除" && \
-	rm -rfv ${workspace}
-
-# サービス起動用のシェルスクリプト作成
-RUN : "コンテナ起動時に起動するサービスを設定する" && { \
-	echo '#!/bin/bash'; \
-	echo 'nginx -c '${conf_path}; \
-	echo '/bin/bash'; \
-	} | tee /startup.sh
-RUN chmod 744 /startup.sh
+	ln -sf ../sites-available/default_http.conf ./defautl_http.conf
 
 WORKDIR /
-CMD [ "/startup.sh" ]
 
+COPY docker-entrypoint.sh /entrypoint.sh
+RUN chmod 744 /entrypoint.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]
+
+# 指定したディレクトリをマウント
+VOLUME ${document_root}
 # 指定したポートを開放
 EXPOSE 80
+
+
+# # サービス起動用のシェルスクリプト作成
+# RUN : "コンテナ起動時に起動するサービスを設定する" && { \
+# 	echo '#!/bin/bash'; \
+# 	echo 'nginx -c '${conf_path}; \
+# 	echo '/bin/bash'; \
+# 	} | tee /startup.sh
+# RUN chmod 744 /startup.sh
+
+# WORKDIR /
+# CMD [ "/startup.sh" ]
+
+# # 指定したポートを開放
+# EXPOSE 80

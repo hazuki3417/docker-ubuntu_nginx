@@ -12,6 +12,8 @@ services:
       TZ: Asia/Tokyo
     ports:
       - "80:80"
+    volumes:
+      - ./htdocs:/var/www
     networks: 
       - common_link
     tty: true

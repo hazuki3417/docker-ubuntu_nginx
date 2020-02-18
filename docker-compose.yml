@@ -1,13 +1,13 @@
 version: "3.0"
 
 services:
-  nginx:
+  ubuntu_nginx:
     build: #buildしたときのimage名はimageに指定した名前になる
       context: ./
       dockerfile: Dockerfile
-    hostname: nginx
-    image: hazuki3417/nginx:latest
-    container_name: nginx
+    hostname: ubuntu_nginx
+    image: hazuki3417/ubuntu_nginx:latest
+    container_name: ubuntu_nginx
     environment:
       TZ: Asia/Tokyo
     ports:
